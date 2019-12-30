@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
 import marked from 'marked';
@@ -8,6 +8,7 @@ marked.setOptions({
 	breaks: true
 });
 
+/* Placeholder text from the freeCodeCamp example for this project. */
 const placeholder = 
 `# Welcome to my React Markdown Previewer!
 
@@ -56,47 +57,31 @@ And here. | Okay. | I think we get it.
 ![React Logo w/ Text](https://goo.gl/Umyytc)
 `
 
-class Editor extends React.Component {
-	render() {
-		return (
-			<textarea id="editor" onChange={this.props.updateInput} defaultValue={placeholder}></textarea>
-		);
-	}
+function Editor(props) {
+	return (
+		<textarea id="editor" onChange={props.updateInput} defaultValue={placeholder}></textarea>
+	);
 }
 
-class Preview extends React.Component {
-	render() {
-		return (
-			<div id="preview" dangerouslySetInnerHTML={{__html: this.props.output}}></div>
-		);
-	}
+function Preview(props) {
+	return (
+		<div id="preview" dangerouslySetInnerHTML={{__html: props.output}}></div>
+	);
 }
 
-class MarkdownPreviewer extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			output: marked(placeholder)
-		}
-		this.updateInput = this.updateInput.bind(this);
+function MarkdownPreviewer(props) {
+	const [output, setOutput] = useState(marked(placeholder));
+
+	const updateInput = (event) => {
+		setOutput(marked(event.target.value));
 	}
 
-	updateInput(event) {
-		const value = event.target.value;
-		const output = marked(value);
-		this.setState({
-			output: output
-		});
-	}
-
-	render() {
-		return (
-			<div className="markdown-previewer">
-				<Editor updateInput={this.updateInput} />
-				<Preview output={this.state.output} />
-			</div>
-		);
-	}
+	return (
+		<div className="markdown-previewer">
+			<Editor updateInput={updateInput} />
+			<Preview output={output} />
+		</div>
+	);
 }
 
 ReactDOM.render(<MarkdownPreviewer />, document.getElementById('root'));
